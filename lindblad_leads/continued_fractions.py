@@ -82,7 +82,60 @@ def cont_frac_to_rat_func(a_list, b_list):
     
     return P, Q
 
+
+def rat_func_2_cont_frac(num, denom):
+    a_list = []
+    b_list = []
+
+    while True:
+        q = denom // num
+        if q.degree() != 1:
+            print(q)
+            print(num)
+            print(denom)
+            print(denom % num)
+        assert(q.degree() == 1) # TODO: fix this
+        a_list.append(-q.coef[0] / q.coef[1])
+        b_list.append(np.sqrt(1. / q.coef[1] + 0.j))
+
+        num_tmp = num.copy()
+        num = -denom % num / q.coef[1]
+        denom = num_tmp
+
+        if num.degree() <= 0:
+            if denom.degree() == 1:
+                a_list.append(-denom.coef[0] / denom.coef[1])
+                b_list.append(np.sqrt(num.coef[0] / denom.coef[1] + 0.j))
+            elif denom.degree() == 0:
+                a_list[-1] += - num.coef[0] / denom.coef[0]
+            else:
+                raise RuntimeError
+            break
+
+    return np.array(a_list), np.array(b_list)
+
 ### tests ###
+
+def test_eval():
+    a = [1., 3.]
+    b = [2., 4.]
+    
+    w = np.linspace(-5, 5, 10)
+    
+    val_ref = 2.**2 / (w - 1. - 4.**2 / (w - 3.))
+    np.testing.assert_allclose(eval_cont_frac(a, b, w), val_ref)
+    
+    ###
+    a = [1.j, 3.]
+    b = [-2., 4.j]
+    
+    w = np.linspace(-5, 5, 10)
+    
+    val_ref = 2.**2 / (w - 1.j + 4.**2 / (w - 3.))
+    np.testing.assert_allclose(eval_cont_frac(a, b, w), val_ref)
+    
+    
+test_eval()
 
 def test_unroll():
     r = unroll_cont_frac([1., -2.], np.sqrt([1., 3.]), 2.j, 1.)
@@ -125,3 +178,25 @@ def test_cont_frac_to_rat_func():
 
 test_cont_frac_to_rat_func()
 
+
+def test_rat_func_2_cont_frac():
+    P, Q = Polynomial([19., -8., 1.]), Polynomial([-29., 29., -9., 1.])
+    a_list, b_list = rat_func_2_cont_frac(P, Q)
+
+    np.testing.assert_allclose(a_list, [1., 3., 5.])
+    np.testing.assert_allclose(b_list, [1., 1j * np.sqrt(2.), 2.j])
+    
+    x = np.linspace(-5, 3, 10)
+    np.testing.assert_allclose(P(x) / Q(x), eval_cont_frac(a_list, b_list, x))
+    
+    ###
+    P, Q = Polynomial([2.]), Polynomial([3., -5.])
+    a_list, b_list = rat_func_2_cont_frac(P, Q)
+
+    np.testing.assert_allclose(a_list, [3. / 5.])
+    np.testing.assert_allclose(b_list, [1j * np.sqrt(2. / 5.)])
+
+    x = np.linspace(-5, 3, 10)
+    np.testing.assert_allclose(P(x) / Q(x), eval_cont_frac(a_list, b_list, x))
+    
+test_rat_func_2_cont_frac()

@@ -2,7 +2,8 @@ import numpy as np
 from copy import copy
 from scipy import optimize
 import toolbox as tb
-from .continued_fractions import eval_and_gradient
+from .continued_fractions import eval_and_gradient, rat_func_2_cont_frac
+from .thiele_continued_fractions import thiele_frac_interpolate, thiele_frac_2_rat_func
 
 
 def fit_diagonal_lambda(w, g, nr_sites, start=None, scale=1., min_lambda=None, nr_shots=1, test_gradient=False, verbose=False, **kwargs):
@@ -86,3 +87,20 @@ def fit_diagonal_lambda(w, g, nr_sites, start=None, scale=1., min_lambda=None, n
     a, b = a_b_from_x(p_best, min_lambda)
     
     return a, b, np.sqrt(error_best)
+
+
+def fit_thiele_cont_frac(x, f, tol=1e-10, n=0):
+    """
+    Build interpolant with a Thiele continued fraction, then transform it into a GF continued fraction.
+    """
+    aa, zz = thiele_frac_interpolate(x, 1. / f, tol=tol, n=n)
+    
+    assert(len(aa) % 2 == 0)
+
+    Q, P = thiele_frac_2_rat_func(aa, zz)
+    
+    assert(P.degree() == Q.degree() - 1)
+    
+    a_list, b_list = rat_func_2_cont_frac(P, Q)
+    
+    return a_list, b_list
