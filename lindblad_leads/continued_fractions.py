@@ -116,3 +116,12 @@ def test_eval_and_gradient():
     np.testing.assert_allclose(grad_a[1], (eval_cont_frac(a2, b, w) - eval_cont_frac(a, b, w)) / eps, rtol=1e-3)
     
 test_eval_and_gradient()
+
+def test_cont_frac_to_rat_func():
+    N, D = cont_frac_to_rat_func([1., 2., 3.], [4., 5., 6.])
+
+    x = np.linspace(-5, 3, 10)
+    np.testing.assert_allclose(N(x) / D(x), eval_cont_frac([1., 2., 3.], [4., 5., 6.], x))
+
+test_cont_frac_to_rat_func()
+
