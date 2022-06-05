@@ -80,7 +80,7 @@ def thiele_frac_interpolate(xx, ff, tol=5e-15, n=0, force_even=True):
 
     return aa[np.isfinite(aa)], zz[np.isfinite(zz)]
 
-def thiele_frac_2_rat(aa, zz):
+def thiele_frac_2_rat_func(aa, zz):
     # num = Polynomial([aa[-1] - zz[-1], 1.])
     num = Polynomial([aa[-1]])
     denom = 1.
@@ -113,8 +113,8 @@ def test_thiele_frac_interpolate():
 
 test_thiele_frac_interpolate()
 
-def test_thiele_frac_2_rat():
-    N, D = thiele_frac_2_rat([1., 2., 3.], [4., 5., 6.])
+def test_thiele_frac_2_rat_func():
+    N, D = thiele_frac_2_rat_func([1., 2., 3.], [4., 5., 6.])
 
     # print(N)
     # print(D)
@@ -122,4 +122,4 @@ def test_thiele_frac_2_rat():
     x = np.linspace(-5, 3, 10)
     np.testing.assert_allclose(N(x) / D(x), eval_thiele_frac([1., 2., 3.], [4., 5., 6.], x))
 
-test_thiele_frac_2_rat()
+test_thiele_frac_2_rat_func()
