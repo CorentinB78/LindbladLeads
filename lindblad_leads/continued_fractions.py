@@ -7,7 +7,7 @@ from numpy.polynomial import Polynomial
 def eval_cont_frac(a_list, b_list, omega, first=0.):
     if len(a_list) == 0:
         return first
-    return abs(b_list[0])**2 / (omega - a_list[0] - eval_cont_frac(a_list[1:], b_list[1:], omega, first=first))
+    return b_list[0]**2 / (omega - a_list[0] - eval_cont_frac(a_list[1:], b_list[1:], omega, first=first))
 
 def eval_and_gradient(a_list, b_list, omega):
     
@@ -17,7 +17,7 @@ def eval_and_gradient(a_list, b_list, omega):
 
         f, grad_a, grad_b = comp_rec(a_list[1:], b_list[1:])
 
-        f = abs(b_list[0])**2 / (omega - a_list[0] - f)
+        f = b_list[0]**2 / (omega - a_list[0] - f)
 
         c = (f / b_list[0])**2
 
@@ -77,7 +77,7 @@ def cont_frac_to_rat_func(a_list, b_list):
     
     P2, Q2 = cont_frac_to_rat_func(a_list[1:], b_list[1:])
     
-    P = Polynomial([abs(b_list[0])**2]) * Q2
+    P = Polynomial([b_list[0]**2]) * Q2
     Q = Polynomial([-a_list[0], 1.]) * Q2 - P2
     
     return P, Q
