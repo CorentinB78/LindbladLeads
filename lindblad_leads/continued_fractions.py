@@ -53,13 +53,17 @@ def cont_frac_to_matrices(a_list, b_list):
         L[i, i] = -a_list[i].imag
         
     for i in range(N-1):
-        H[i, i+1] = b_list[i]
-        H[i+1, i] = np.conj(b_list[i])
+        H[i, i+1] = np.real(b_list[i+1])
+        H[i+1, i] = H[i, i+1]
+        L[i, i+1] = -np.imag(b_list[i+1])
+        L[i+1, i] = L[i, i+1]
         
     return b_list[0], H, L
 
 def make_GF_function(H, L):
     """
+    Make function w -> [w - H + iL]^-1
+    
     Returns function (n)->(n,N,N)
     """
     M = H - 1j * L
